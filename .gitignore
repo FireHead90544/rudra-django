@@ -6,6 +6,10 @@ __pycache__/
 # Environment Variables
 .env
 
+# SSH Key Files
+*.pem
+*.ppk
+
 # Databases
 *.sqlite3
 *.db
