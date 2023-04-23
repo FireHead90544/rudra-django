@@ -1,0 +1,15 @@
+{
+  "name": "tailwind-build",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tailwindcss build -i ../static/style.css -o ../static/build.min.css --minify && node purge.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.2.7"
+  }
+}

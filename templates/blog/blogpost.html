@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title }} | Rudransh Joshi{% endblock %}
+{% load extras %}
+{% load humanize %}
+{% load static %}
+{% block css %}pre::-webkit-scrollbar{ display: none; }{% endblock %}
+{% block headjs %}<link rel="stylesheet" href="{% static 'blog/css/prism-atom-dark.css' %}">{% endblock %}
+{% block body %}
+<div class="container flex items-center justify-between px-4 mx-auto rounded">
+    <div class="inline-flex ml-auto items-center space-x-4 lg:flex">
+        {% if not user.is_authenticated %}
+            <a href="/blog/login/?ref={{ request.path }}" class="px-4 py-2 rounded-md bg-violet-400 text-gray-900 font-semibold">Sign In</a>
+        {% else %}
+            <p class="text-gray-400 font-semibold">Welcome, </p>
+            <div class="dropdown-wrapper relative">
+                <button class="rounded bg-violet-400 py-2 px-4 font-semibold text-gray-900 transition duration-300 inline-flex">{{ user.first_name }} {{ user.last_name }}
+                    <span class="ml-2">│</span>
+                    <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current self-center">
+                        <path d="M18,9l-6,6L6,9H18z"></path>
+                    </svg>
+                </button>
+                <div class="dropdown-menu absolute z-[1] mt-2 rounded bg-violet-400 shadow right-0 w-full hidden">
+                    <ul class="overflow-hidden rounded">
+                        <li><a href="/blog/dashboard/" class="flex py-2 px-4 justify-center transition duration-300 border-gray-700 border-b-2">Dashboard</a></li>
+                        <form action="/blog/logout/?ref={{ request.path }}" method="post" class="mx-auto">{% csrf_token %}<li><button class="mx-auto w-full flex py-2 px-4 justify-center transition duration-300 cursor-pointer" type="submit">Logout</button></li></form>
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<!-- Blogpost Section -->
+<article class="max-w-[95%] lg:max-w-5xl px-6 pt-16 mx-auto space-y-12 text-gray-50">
+    <div class="w-full mx-auto space-y-4 text-center">
+        <h1 class="text-4xl font-bold leading-tight md:text-5xl">{{ post.title }}</h1>
+        <div class="flex flex-col items-start justify-center mx-auto md:flex-row md:items-center text-gray-400">
+            <div class="flex items-center mx-auto text-gray-400">
+                <p class="text-md after:content-['•'] after:mx-2">{{ post.publish_date|date:"M d, Y" }}</p>
+                <p class="flex-shrink-0 text-md after:content-['•'] after:mx-2">{{ read_time }} min read</p>
+                <p class="flex-shrink-0 text-md">{{ post.views }} views</p>
+            </div>
+        </div>
+        <div class="flex flex-wrap gap-x-2 gap-y-2 justify-center">
+            {% for tag in post.tags|split:"," %}
+                <a href="/blog/tags/{{ tag|lower|split:" "|join:'-' }}/" class="px-3 py-1 rounded-sm text-sm font-semibold bg-violet-400 text-gray-900">#{{ tag|title }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="text-gray-100">
+        {{ post.content|safe }}
+    </div>
+    <!-- Like Button -->
+    <form class="flex justify-center" {% if not user.is_authenticated %}action="/blog/login/"{% else %}action="/blog/posts/like/" method="post"{% endif %}>
+        <button type="submit" class="flex rounded border-2 pr-6 justify-center font-semibold {% if not user.is_authenticated %}fill-current stroke-2{% else %}{% if liked %}fill-current stroke-2{% else %}text-gray-100 fill-transparent stroke-current stroke-[84]{% endif %}{% endif %}">
+            {% csrf_token %}
+            <input type="hidden" name="slug" value="{{ post.slug }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20" viewBox="0 0 752 752">
+                <g transform="translate(0.000000,752.000000) scale(0.100000,-0.100000)">
+                    <path d="M3958 5725 c-56 -31 -59 -70 -28 -304 52 -386 91 -439 134 -181 26 156 47 405 37 431 -21 56 -92 83 -143 54z"/>
+                    <path d="M3344 5546 c-56 -56 -50 -82 58 -227 211 -286 310 -380 294 -278 -16 101 -186 482 -231 517 -41 32 -80 29 -121 -12z"/>
+                    <path d="M4558 5564 c-16 -8 -39 -36 -52 -62 -68 -135 -186 -445 -186 -491 0 -70 119 55 309 325 57 82 71 109 71 139 0 49 -15 74 -55 91 -42 17 -53 17 -87 -2z"/>
+                    <path d="M2495 5161 c-106 -27 -175 -114 -175 -221 0 -40 38 -127 66 -152 10 -9 53 -35 94 -59 192 -108 463 -312 680 -513 63 -58 176 -159 250 -223 232 -201 568 -549 627 -650 20 -34 27 -63 31 -118 7 -104 -16 -164 -87 -236 -66 -65 -124 -89 -218 -89 l-63 0 0 -53 c0 -75 -25 -139 -76 -196 -58 -65 -127 -95 -219 -96 l-70 0 0 -65 c-1 -78 -29 -147 -83 -204 -38 -39 -122 -86 -156 -86 -19 0 -19 0 0 -21 23 -26 163 -134 220 -171 264 -169 575 -212 864 -118 97 32 257 110 344 169 406 274 502 657 278 1105 -24 50 -62 118 -83 152 l-39 61 19 114 c54 314 183 521 424 682 99 66 142 112 157 168 25 90 -36 203 -130 243 -91 38 -242 26 -347 -27 -127 -65 -303 -225 -416 -379 -61 -83 -124 -133 -196 -155 -91 -27 -129 -6 -306 166 -320 311 -628 562 -961 781 -256 169 -350 211 -429 191z"/>
+                    <path d="M2936 4115 c-107 -38 -164 -168 -121 -273 21 -48 44 -73 134 -139 160 -119 365 -312 569 -537 136 -150 173 -176 252 -176 158 0 258 169 183 309 -70 129 -513 565 -759 747 -116 86 -170 100 -258 69z"/>
+                    <path d="M2578 3720 c-51 -27 -95 -84 -108 -141 -10 -39 -9 -58 4 -101 17 -58 46 -91 156 -174 158 -119 406 -355 575 -548 87 -99 162 -131 249 -106 128 36 195 185 134 298 -33 60 -279 323 -439 469 -152 138 -321 274 -380 304 -51 25 -141 25 -191 -1z"/>
+                    <path d="M2293 3295 c-69 -35 -106 -88 -111 -165 -8 -105 14 -139 158 -249 47 -36 200 -180 341 -321 243 -244 258 -258 307 -269 110 -27 224 44 251 157 11 43 10 60 -3 104 -13 46 -34 74 -139 188 -231 251 -523 515 -622 561 -57 26 -121 24 -182 -6z"/>
+                </g>    
+            </svg>
+            <span class="my-auto">{{ post.likes }}</span>
+        </button>
+    </form>
+    <!-- About Author -->
+    <div class="pt-12 pb-6 border-y border-gray-700">
+        <div class="flex flex-col space-y-4 md:space-y-0 md:space-x-6 md:flex-row">
+            <img src="{{ post.author.avatar.url }}" alt="Author: {{ post.author.name }}" class="self-center flex-shrink-0 w-24 h-24 border rounded-full md:justify-self-start bg-gray-500 border-gray-700">
+            <div class="flex flex-col">
+                <h4 class="text-center md:text-left text-lg font-semibold">{{ post.author.name }}</h4>
+                <p class="text-center md:text-left text-gray-400">{{ post.author.about }}</p>
+            </div>
+        </div>
+        <div class="flex justify-center pt-4 space-x-4 align-center">
+            <a rel="noopener noreferrer" href="{{ post.author.github }}" aria-label="GitHub" class="p-2 rounded-md text-gray-100 hover:text-violet-400">
+                <svg viewBox="0 0 496 512" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current">
+                    <path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path>
+                </svg>
+            </a>
+            <a rel="noopener noreferrer" href="{{ post.author.instagram }}" aria-label="Instagram" class="p-2 rounded-md text-gray-100 hover:text-violet-400">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current">
+                    <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"></path>
+                </svg>
+            </a>
+            <a rel="noopener noreferrer" href="{{ post.author.twitter }}" aria-label="Twitter" class="p-2 rounded-md text-gray-100 hover:text-violet-400">
+                <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current">
+                    <path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path>
+                </svg>
+            </a>
+            <a rel="noopener noreferrer" href="mailto:{{ post.author.email }}" aria-label="Email" class="p-2 rounded-md text-gray-100 hover:text-violet-400">
+                <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current">
+                    <path d="M464 64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm0 48v40.805c-22.422 18.259-58.168 46.651-134.587 106.49-16.841 13.247-50.201 45.072-73.413 44.701-23.208.375-56.579-31.459-73.413-44.701C106.18 199.465 70.425 171.067 48 152.805V112h416zM48 400V214.398c22.914 18.251 55.409 43.862 104.938 82.646 21.857 17.205 60.134 55.186 103.062 54.955 42.717.231 80.509-37.199 103.053-54.947 49.528-38.783 82.032-64.401 104.947-82.653V400H48z"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+</article>
+<!-- Comments Section -->
+<section class="max-w-[95%] mb-12 lg:max-w-5xl px-6 antialiased mx-auto">
+    <h1 class="my-8 text-3xl md:text-4xl font-bold text-white leading-tight">Comments ({{ commentscount }})</h1>
+    <div class="space-y-4">
+        {% if user.is_authenticated %}
+            <form action="/blog/comments/post/" method="post" class="flex flex-row space-x-3 text-white">
+                <input type="text" name="comment" required placeholder="Commenting as {{ user }}..." class="flex-1 w-0 border-b-2 outline-none bg-transparent border-gray-400">
+                {% csrf_token %}
+                <input type="hidden" name="slug" value="{{ post.slug }}">
+                <input type="hidden" name="parent" value="">
+                <button type="submit" class="px-2 py-1 border-2 border-purple-400 rounded-lg bg-transparent text-gray-200 hover:bg-purple-400 hover:text-gray-900 transition ease-in-out duration-100 font-semibold">Add Comment</button>
+            </form>
+        {% else %}
+            <p class="mb-8 font-semibold text-white leading-tight">Please login to post comments.</p>
+        {% endif %}
+        {% if not commentscount %}
+            <p class="pt-4 font-semibold text-2xl text-white">No comments yet. Be the first one to comment, hurrah!</p>
+        {% else %}
+            {% for comment in comments %}
+                <div class="flex">
+                    <div class="flex-shrink-0 mr-3">
+                        <img class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10" src="{% static 'blog/avatar.png' %}" alt="Default avatar for user!">
+                    </div>
+                    <div class="text-white flex-1 border border-gray-400 rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed bg-gray-900/50">
+                        <strong>{{ comment.user.first_name }} {{ comment.user.last_name }}</strong><span class="mx-2 text-xs text-gray-400">{{ comment.timestamp|naturaltime|age }}</span>
+                        <div class="text-gray-100">
+                            <p class="text-sm inline-flex">
+                            {{ comment.comment }}
+                            <!-- Delete Comment Button -->
+                            {% if comment.user == user %}
+                                <button type="button" class="text-red-500 delete-comment" trigger-target="{{ comment.sno }}"> <!-- color: red; -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/> 
+                                    </svg>
+                                </button>
+                            {% endif %}
+                            </p>
+                        </div>
+                        {% with commentreplies=replies|get_val:comment.sno %}
+                            {% if not commentreplies|length %}
+                                {% if user.is_authenticated %}
+                                    <div class="addReplies mt-4 inline-flex items-center text-sm text-purple-400 font-semibold gap-x-2 select-none cursor-pointer">
+                                        Add Reply
+                                    </div>
+                                    <div class="space-y-4 my-2 hidden">
+                                        <form action="/blog/comments/post/" method="post" class="flex flex-row space-x-3">
+                                            <input type="text" name="comment" required placeholder="Commenting as {{ user }}..." class="flex-1 w-0 border-b-2 outline-none bg-transparent border-gray-400">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="slug" value="{{ post.slug }}">
+                                            <input type="hidden" name="parent" value="{{ comment.sno }}">
+                                            <button type="submit" class="px-2 py-1 border-2 border-purple-400 rounded-lg bg-transparent text-gray-200 hover:bg-purple-400 hover:text-gray-900 transition ease-in-out duration-100 font-semibold">Add Reply</button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="viewReplies mt-4 inline-flex items-center text-sm text-purple-400 font-semibold gap-x-2 select-none cursor-pointer">
+                                    <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current">
+                                        <path d="M18,9l-6,6L6,9H18z"></path>
+                                    </svg>
+                                    {{ commentreplies|length }} Replies
+                                </div>
+                                <div class="space-y-4 my-2 hidden">
+                                    {% if user.is_authenticated %}
+                                        <form action="/blog/comments/post/" method="post" class="flex flex-row space-x-3">
+                                            <input type="text" name="comment" required placeholder="Commenting as {{ user }}..." class="flex-1 w-0 border-b-2 outline-none bg-transparent border-gray-400">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="slug" value="{{ post.slug }}">
+                                            <input type="hidden" name="parent" value="{{ comment.sno }}">
+                                            <button type="submit" class="px-2 py-1 border-2 border-purple-400 rounded-lg bg-transparent text-gray-200 hover:bg-purple-400 hover:text-gray-900 transition ease-in-out duration-100 font-semibold">Add Reply</button>
+                                        </form>
+                                    {% endif %}
+                                    {% for reply in commentreplies %}
+                                        <div class="flex ml-2 md:ml-8">
+                                            <div class="flex-shrink-0 mr-3">
+                                                <img class="mt-3 rounded-full w-6 h-6 sm:w-8 sm:h-8" src="{% static 'blog/avatar.png' %}" alt="Default avatar for user!">
+                                            </div>
+                                            <div class="text-white flex-1 bg-gray-800 rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
+                                                <strong>{{ reply.user.first_name }} {{ reply.user.last_name }}</strong><span class="mx-2 text-xs text-gray-400">{{ reply.timestamp|naturaltime|age }}</span>
+                                                <div class="text-gray-100">
+                                                    <p class="text-xs sm:text-sm inline-flex">
+                                                        {{ reply.comment }}
+                                                        <!-- Delete Comment Button -->
+                                                        {% if reply.user == user %}
+                                                            <button type="button" class="text-red-500 delete-comment" trigger-target="{{ reply.sno }}"> <!-- color: red;-->
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 16 16">
+                                                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/> 
+                                                                </svg>
+                                                            </button>
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Delete Comment Modal -->
+        <div class="fixed hidden inset-0 bg-gray-800/50 overflow-y-auto sm:my-6 w-screen h-full sm:max-h-fit items-center sm:items-start justify-center" id="commentDeleteModal">
+            <div class="flex flex-col max-w-[95%] md:max-w-md gap-2 p-6 rounded-md shadow-md bg-gray-900 text-gray-100 mx-auto">
+                <h2 class="flex items-center gap-2 text-xl font-semibold leading-tight tracking-wide">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-6 h-6 fill-current shrink-0 text-purple-400">
+                        <path d="M451.671,348.569,408,267.945V184c0-83.813-68.187-152-152-152S104,100.187,104,184v83.945L60.329,348.568A24,24,0,0,0,81.432,384h86.944c-.241,2.636-.376,5.3-.376,8a88,88,0,0,0,176,0c0-2.7-.135-5.364-.376-8h86.944a24,24,0,0,0,21.1-35.431ZM312,392a56,56,0,1,1-111.418-8H311.418A55.85,55.85,0,0,1,312,392ZM94.863,352,136,276.055V184a120,120,0,0,1,240,0v92.055L417.137,352Z"></path>
+                        <rect width="32" height="136" x="240" y="112"></rect>
+                        <rect width="32" height="32" x="240" y="280"></rect>
+                    </svg>Delete Comment
+                </h2>
+                <p class="flex-1 text-gray-400">Are you sure you want to delete this comment?</p>
+                <!-- Action Buttons -->
+                <form class="flex flex-col justify-end gap-3 mt-6 sm:flex-row" action="/blog/comments/delete/" method="post">
+                    <span class="px-6 py-2 text-center cursor-pointer rounded-sm shadow-sm bg-gray-800/50 sm:bg-transparent" id="closeCommentModal">No</span>
+                    <input id="commentSno" type="hidden" name="sno" value="">
+                    {% csrf_token %}
+                    <button class="px-6 py-2 rounded-sm shadow-sm text-center bg-purple-400 text-gray-900" type="submit">Yes</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block js %}
+<script src="{% static 'blog/js/prism.js' %}"></script>
+<script src="{% static 'blog/js/blogpost.js' %}"></script>
+{% if user.is_authenticated %}
+    <script type="text/javascript">
+        document.querySelector(".dropdown-wrapper > button").addEventListener("click", function(){
+            document.querySelector(".dropdown-menu").classList.toggle("hidden");
+        })
+        document.currentScript.remove();
+    </script>
+{% endif %}
+{% endblock js %}

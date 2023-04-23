@@ -1,0 +1,26 @@
+{% extends "base.html"%}
+{% block headjs %}<script src="https://kit.fontawesome.com/{{ fontawesome_kit_id }}.js" crossorigin="anonymous"></script>{% endblock %}
+{% block title %}All My Links | Rudransh Joshi{% endblock %}
+{% block body %}
+<!-- AllMyLinks Section -->
+<section class="my-2 max-w-[95%] px-8 py-3 mx-auto rounded-xl md:px-12 lg:px-16 xl:px-32 text-gray-100">
+    <div class="space-y-2 text-center mb-8">
+        <h3 class="text-5xl font-bold after:block after:w-32 sm:after:w-72 after:h-3 after:mb-5 after:rounded-md after:mx-auto after:mt-4 after:bg-violet-400">All My Links</h3>
+        <p class="text-gray-400">Connect to me on my social(s)</p>
+    </div>
+    {% if links %}
+        {% for link in links %}
+            <a href="{{ link.url }}" target="_blank" class="flex flex-row pl-4 py-2 my-2 items-center border rounded-lg shadow overflow-hidden bg-gray-900 border-violet-400 hover:bg-violet-400 group-hover:transition ease-in-out duration-300 hover:scale-110 text-gray-200">
+                <span class="flex-shrink-0 inline-flex mx-3 item-center justify-center leading-none text-violet-400">
+                    <i class="{{ link.fa_classes }} text-center fa-2x w-8 h-8"></i>
+                </span>
+                <div class="flex-1 py-2 mx-2 border-l-4 border-violet-400 rounded-sm">
+                    <p class="text-sm text-center w-[95%] font-semibold">{{ link.name }}</p>
+                </div>
+            </a>
+        {% endfor %}
+    {% else %}
+        <p class="text-center text-gray-400">No links found</p>
+    {% endif %}
+</section>
+{% endblock %}

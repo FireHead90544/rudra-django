@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Portfolio | Rudransh Joshi{% endblock %}
+{% load extras %}
+{% block body %}
+<!-- Portfolio Section -->
+<section class="max-w-[95%] mx-auto py-6 text-gray-100">
+    <div class="container px-6 mx-auto space-y-8">
+        <div class="space-y-2 text-center">
+            <h2 class="text-5xl font-bold after:block after:w-52 after:h-3 after:mb-5 after:rounded-md after:mx-auto after:mt-4 after:bg-violet-400">Portfolio</h2>
+            <p class="font-semibold text-sm text-gray-400">My best works up until now or in progress.</p>
+        </div>
+        {% if items %}
+            <div class="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
+                {% for item in items %}
+                    <article class="flex flex-col bg-gray-900 rounded-xl">
+                        <a rel="noopener noreferrer" class="overflow-hidden rounded-t-xl" href="{{ item.slug }}/" aria-label="{{ item.title }}">
+                            <img alt="" class="object-cover w-full h-52 bg-gray-500 ease-in duration-200 cursor-pointer hover:scale-110" src="{{ item.thumbnail.url }}">
+                        </a>
+                        <div class="flex flex-col flex-1 p-6">
+                            <a rel="noopener noreferrer" href="{{ item.slug }}/" aria-label="{{ item.title }}"></a>
+                            <p class="text-xs tracking-wider uppercase font-semibold text-violet-400">{{ item.tags|split:","|first }}</p>
+                            <a class="flex-1 py-2 text-lg font-semibold leading-snug" href="{{ item.slug }}/">{{ item.title }}</a>
+                            <div class="flex flex-wrap justify-between pt-3 space-x-2 text-xs text-gray-400">
+                                <span>{{ item.date }}</span>
+                                <span>{{ item.author }}</span>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center text-gray-400">No items found</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

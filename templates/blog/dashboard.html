@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard | Rudransh Joshi{% endblock %}
+{% load static %}
+{% block body %}
+<section class="max-w-[95%] mx-auto pt-6 text-gray-200">
+    <div class="text-center mb-8">
+        <h2 class="text-5xl font-bold after:block after:w-28 after:h-3 after:mb-4 after:rounded-md after:mx-auto after:mt-4 after:bg-violet-400">Dashboard</h2>
+    </div>
+    <div class="max-w-md mx-auto p-8 sm:flex sm:space-x-6 bg-gray-900 text-gray-100 rounded-xl">
+        <div class="flex-shrink-0 w-1/2 mb-6 1/2 mx-auto sm:h-32 sm:w-32 sm:mb-0">
+            <img src="{% static 'blog/avatar.png' %}" alt="Default avatar for user!" class="object-cover object-center w-full h-full rounded">
+        </div>
+        <div class="flex flex-col space-y-4">
+            <div>
+                <h2 class="text-2xl font-semibold">{{ request.user.first_name }} {{ request.user.last_name }}</h2>
+                <span class="text-sm text-gray-400">Last Login: {{ request.user.last_login }}</span>
+            </div>
+            <div class="space-y-1">
+                <span class="flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-label="Email address" class="w-4 h-4">
+                        <path fill="currentColor" d="M274.6,25.623a32.006,32.006,0,0,0-37.2,0L16,183.766V496H496V183.766ZM464,402.693,339.97,322.96,464,226.492ZM256,51.662,454.429,193.4,311.434,304.615,256,268.979l-55.434,35.636L57.571,193.4ZM48,226.492,172.03,322.96,48,402.693ZM464,464H48V440.735L256,307.021,464,440.735Z"></path>
+                    </svg>
+                    <span class="text-gray-400">{{ request.user.email }}</span>
+                </span>
+                <span class="flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-label="Username" class="w-4 h-4">
+                        <circle fill="currentColor" cx="12" cy="8" r="5" />
+                        <path fill="currentColor" d="M3,21 h18 C 21,12 3,12 3,21"/>				
+                    </svg>
+                    <span class="text-gray-400">{{ request.user.username }}</span>
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Container -->
+    <div class="sm:flex sm:flex-wrap sm:space-x-6 text-gray-100 rounded-xl mt-8 justify-center">
+        <div class="flex flex-col space-y-4 bg-gray-900 rounded-xl p-8 mt-4">
+            <div>
+                <h2 class="text-2xl font-semibold text-center">Change Name</h2>
+            </div>
+            <div class="space-y-1">
+                <form method="POST" action="/blog/dashboard/changename/">
+                    {% csrf_token %}
+                    <div class="flex flex-col space-y-2">
+                        <label for="first_name" class="text-sm text-gray-400">First Name</label>
+                        <input type="text" name="first_name" id="first_name" value="{{ request.user.first_name }}" class="border border-gray-700 rounded-md p-2 text-gray-100 bg-gray-800 focus:outline-none focus:border-violet-400">
+                    </div>
+                    <div class="flex flex-col space-y-2 mt-4">
+                        <label for="last_name" class="text-sm text-gray-400">Last Name</label>
+                        <input type="text" name="last_name" id="last_name" value="{{ request.user.last_name }}" class="border border-gray-700 rounded-md p-2 text-gray-100 bg-gray-800 focus:outline-none focus:border-violet-400">
+                    </div>
+                    <div class="flex flex-col space-y-2 mt-4">
+                        <button type="submit" class="bg-violet-400 text-gray-900 rounded-md p-2">Change Name</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="flex flex-col space-y-4 bg-gray-900 rounded-xl p-8 mt-4">
+            <div>
+                <h2 class="text-2xl font-semibold text-center">Change Username</h2>
+            </div>
+            <div class="space-y-1">
+                <form method="POST" action="/blog/dashboard/changeusername/">
+                    {% csrf_token %}
+                    <div class="flex flex-col space-y-2">
+                        <label for="username" class="text-sm text-gray-400">Username</label>
+                        <input type="text" name="username" id="username" value="{{ request.user.username }}" class="border border-gray-700 rounded-md p-2 text-gray-100 bg-gray-800 focus:outline-none focus:border-violet-400" pattern="[a-zA-Z0-9_]{4,16}" title="Enter a username between 4-16 characters containing only alphabets, numbers and underscores." required>
+                    </div>
+                    <div class="flex flex-col space-y-2 mt-4">
+                        <label for="password" class="text-sm text-gray-400">Password</label>
+                        <input type="password" name="password" id="password" class="border border-gray-700 rounded-md p-2 text-gray-100 bg-gray-800 focus:outline-none focus:border-violet-400" minlength=8 pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" title="The password should be atleast 8 characters long with lowercase/uppercase letters, numbers and symbols" required>
+                    </div>
+                    <div class="flex flex-col space-y-2 mt-4">
+                        <button type="submit" class="bg-violet-400 text-gray-900 rounded-md p-2">Change Username</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="flex flex-col space-y-4 bg-gray-900 rounded-xl p-8 mt-4">
+            <div>
+                <h2 class="text-2xl font-semibold text-center">Change Password</h2>
+            </div>
+            <div class="space-y-1">
+                <form method="POST" action="/blog/dashboard/changepassword/">
+                    {% csrf_token %}
+                    <div class="flex flex-col space-y-2">
+                        <label for="current_password" class="text-sm text-gray-400">Current Password</label>
+                        <input type="password" name="current_password" id="current_password" class="border border-gray-700 rounded-md p-2 text-gray-100 bg-gray-800 focus:outline-none focus:border-violet-400" minlength=8 pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" title="The password should be atleast 8 characters long with lowercase/uppercase letters, numbers and symbols" required>
+                    </div>
+                    <div class="flex flex-col space-y-2 mt-4">
+                        <label for="new_password" class="text-sm text-gray-400">New Password</label>
+                        <input type="password" name="new_password" id="new_password" class="border border-gray-700 rounded-md p-2 text-gray-100 bg-gray-800 focus:outline-none focus:border-violet-400" minlength=8 pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" title="The password should be atleast 8 characters long with lowercase/uppercase letters, numbers and symbols" required>
+                    </div>
+                    <div class="flex flex-col space-y-2 mt-4">
+                        <label for="confirm_password" class="text-sm text-gray-400">Confirm Password</label>
+                        <input type="password" name="confirm_password" id="confirm_password" class="border border-gray-700 rounded-md p-2 text-gray-100 bg-gray-800 focus:outline-none focus:border-violet-400" minlength=8 pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" title="The password should be atleast 8 characters long with lowercase/uppercase letters, numbers and symbols" required>
+                    </div>
+                    <div class="flex flex-col space-y-2 mt-4">
+                        <button type="submit" class="bg-violet-400 text-gray-900 rounded-md p-2">Change Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

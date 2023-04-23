@@ -1,0 +1,7 @@
+django
+django-froala-editor
+pillow
+readtime
+psycopg2-binary
+requests
+python-dotenv

@@ -3,6 +3,19 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Environment Variables
+.env
+
+# Databases
+*.sqlite3
+*.db
+
+# Media
+media/*
+
+# Node Modules
+node_modules/
+
 # C extensions
 *.so
 

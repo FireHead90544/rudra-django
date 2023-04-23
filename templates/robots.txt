@@ -1,0 +1,10 @@
+User-Agent: *
+
+Disallow: /hire/
+Disallow: /contact/
+Disallow: /blog/logout/
+Disallow: /blog/dashboard/
+Disallow: /comments/
+Disallow: /admin/
+{% load extras %}
+Sitemap: {{ request.build_absolute_uri|replace:"/robots.txt|/sitemap.xml" }}
