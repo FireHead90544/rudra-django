@@ -1,6 +1,16 @@
 # rudra-django
 My Awesome Portfolio Website Built w/ Django & TailwindCSS
 
+# Features
+- Awesome & Neat UI
+- Blog w/ likes & comments
+- IP based blogpost view count
+- A fully fledged authentication system
+- A neat portfolio with project showcase
+- Recaptcha enabled contact/hire-me form
+- Hire requests integration w/ discord channel
+- And a lot more cool stuffs which you should yourself figure out.
+
 # Installation
 The following steps are tested against ubuntu 20.04 LTS.
 - Update the mirrors & packages
