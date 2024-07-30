@@ -6,6 +6,7 @@ My Awesome Portfolio Website Built w/ Django & TailwindCSS
 - Blog w/ likes & comments
 - IP based blogpost view count
 - A fully fledged authentication system
+- A cool dashboard to manage everything
 - A neat portfolio with project showcase
 - Recaptcha enabled contact/hire-me form
 - Hire requests integration w/ discord channel
