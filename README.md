@@ -2,7 +2,7 @@
 My Awesome Portfolio Website Built w/ Django & TailwindCSS
 
 # Installation
-The following steps are tested against ubuntu 22.04 LTS.
+The following steps are tested against ubuntu 20.04 LTS.
 - Update the mirrors & packages
   ```bash
   sudo apt update && sudo apt upgrade -y && sudo apt update
